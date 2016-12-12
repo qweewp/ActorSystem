@@ -1,8 +1,0 @@
-1) Logging
-2) Build tools
-3) XML
-4) JDBC, ORM
-5) SOAP, WSDL
-6) REST
-7) Testing
-8) Presentation layer
