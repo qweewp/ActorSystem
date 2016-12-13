@@ -7,27 +7,31 @@ import java.util.UUID;
 
 /**
  * Unique reference for {@link Actor} instance.
+ * It also provides the functionality to send messages to itself.
  */
 public class ActorRefId implements IActorRefId, Comparable<ActorRefId> {
 
     private final UUID uuid = UUID.randomUUID();
 
-    private ActorContext context;
     private Actor instance;
-
     private MailBoxImpl mailBox;
 
-    ActorRefId(Actor instance, ActorContext context, MailBoxImpl mailBox) {
+    ActorRefId(Actor instance, MailBoxImpl mailBox) {
         this.instance = instance;
-        this.context = context;
         this.mailBox = mailBox;
     }
 
+    /**
+     * @see IActorRefId#tell(Object)
+     */
     @Override
     public void tell(Object message) {
         mailBox.receiveMail(this, message);
     }
 
+    /**
+     * @see IActorRefId#tell(Object, ActorRefId)
+     */
     @Override
     public void tell(Object message, ActorRefId sender) {
         mailBox.receiveMail(this, message, sender);
@@ -38,10 +42,12 @@ public class ActorRefId implements IActorRefId, Comparable<ActorRefId> {
         return this.getUuid().compareTo(other.getUuid());
     }
 
+    @Override
     public Actor getInstance() {
         return instance;
     }
 
+    @Override
     public UUID getUuid() {
         return uuid;
     }

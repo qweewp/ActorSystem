@@ -2,6 +2,8 @@ package API.actor.abstaract;
 
 import API.actor.impl.ActorRefId;
 
+import java.util.UUID;
+
 /**
  * Implicit unique id for Actor.
  * From this class you can sent messages for another this actor.
@@ -23,4 +25,8 @@ public interface IActorRefId {
      */
     Actor getInstance();
 
+    /**
+     * Return unique id.
+     */
+    UUID getUuid();
 }

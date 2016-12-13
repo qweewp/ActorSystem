@@ -5,15 +5,21 @@ import API.actor.abstaract.Actor;
 /**
  * Actor inner implementation, exist only for defined in API methods.
  */
-public abstract class ActorImpl implements Actor {
+abstract class ActorImpl implements Actor {
 
-    abstract void receiveEmailFrom(ActorRefId sender, Object message);
+    /**
+     * Receive message from.
+     *
+     * @param receiver actor unique reference
+     * @param message  message data
+     */
+    abstract void receiveEmailFrom(ActorRefId receiver, Object message);
 
-    abstract void setSender(ActorRefId actorRefId);
+    abstract void setSender(ActorRefId sender);
 
     abstract void setContext(ActorContext context);
 
-    abstract void setSelf(ActorRefId actorRefId);
+    abstract void setSelf(ActorRefId receiver);
 
     abstract void setMailBox(MailBoxImpl mailBox);
 

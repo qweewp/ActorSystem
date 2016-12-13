@@ -29,19 +29,14 @@ class ActorRefIdFactoryImpl {
                 .orElse(createNewContext(actorClass, ecosystem));
 
         MailBoxImpl mailBox = new MailBoxImpl();
-        ActorImpl newActor = createActorInstance(actorClass);
-        ActorRefId newActorRefId = createActorRefId(newActor, actorContext, mailBox);
 
-        newActor.setContext(actorContext);
-        newActor.setMailBox(mailBox);
+        ActorImpl newActor = createActorInstance(actorClass, actorContext, mailBox);
+        ActorRefId newActorRefId = createActorRefId(newActor, mailBox);
+
         newActor.setSelf(newActorRefId);
-
         actorContext.addActorRefId(newActorRefId);
 
-        mailBox.setActor(newActor);
-
         contexts.add(actorContext);
-
         return newActorRefId;
     }
 
@@ -49,18 +44,20 @@ class ActorRefIdFactoryImpl {
         return new ActorContext(actorClass, ecosystem);
     }
 
-    private static ActorRefId createActorRefId(Actor actor, ActorContext context, MailBoxImpl mailBox) {
-        return new ActorRefId(actor, context, mailBox);
+    private static ActorRefId createActorRefId(Actor actor, MailBoxImpl mailBox) {
+        return new ActorRefId(actor, mailBox);
     }
 
-    private static ActorImpl createActorInstance(Class<? extends Actor> actorClass) {
-        Actor actor = null;
+    private static ActorImpl createActorInstance(Class<? extends Actor> actorClass, ActorContext context, MailBoxImpl mailBox) {
+        ActorImpl actor = null;
         try {
-            actor = actorClass.newInstance();
+            actor = (ActorImpl) actorClass.newInstance();
+            actor.setContext(context);
+            actor.setMailBox(mailBox);
         } catch (InstantiationException | IllegalAccessException e) {
             System.out.println("Failed while initialization Actor" + e);
         }
-        return (ActorImpl) actor;
+        return actor;
     }
 
     static Set<ActorContext> getContext() {

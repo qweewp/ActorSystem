@@ -4,6 +4,8 @@ import API.actor.abstaract.Actor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Actor with untyped message handle
  */
@@ -36,14 +38,14 @@ public abstract class UntypedActor extends ActorImpl {
     }
 
     @Override
-    void receiveEmailFrom(ActorRefId actorRefId, Object message) {
+    void receiveEmailFrom(ActorRefId receiver, Object message) {
         preReceive();
         try {
             while (true) {
-                while (getSelf().getMailBox().isThereMessages()) {
-                    receive(getSelf().getMailBox().getNextMessage());
+                while (receiver.getMailBox().isThereMessage()) {
+                    receive(receiver.getMailBox().getNextMessage());
                 }
-                sleep();
+                waiting(1000);
             }
         } catch (InterruptedException e) {
             LOGGER.debug("Interrupted while waiting: " + Thread.currentThread());
@@ -53,12 +55,14 @@ public abstract class UntypedActor extends ActorImpl {
     }
 
     /**
-     * Drives current thread into sleep.
+     * Drives the current thread to sleep for a certain time.
+     *
+     * @param milliseconds after this time thread wake up
      */
-    private void sleep() throws InterruptedException {
-        synchronized (Thread.currentThread()) {
-            Thread.currentThread().wait();
-        }
+    private void waiting(long milliseconds) throws InterruptedException {
+        mailBox.getLock().lock();
+        mailBox.getMessageCondition().await(milliseconds, TimeUnit.MILLISECONDS);
+        mailBox.getLock().unlock();
     }
 
     @Override
@@ -72,8 +76,8 @@ public abstract class UntypedActor extends ActorImpl {
     }
 
     @Override
-    void setSender(ActorRefId actorRefId) {
-        this.sender = actorRefId;
+    void setSender(ActorRefId sender) {
+        this.sender = sender;
     }
 
     @Override
@@ -87,8 +91,8 @@ public abstract class UntypedActor extends ActorImpl {
     }
 
     @Override
-    void setSelf(ActorRefId actorRefId) {
-        this.selfRef = actorRefId;
+    void setSelf(ActorRefId receiver) {
+        this.selfRef = receiver;
     }
 
     @Override

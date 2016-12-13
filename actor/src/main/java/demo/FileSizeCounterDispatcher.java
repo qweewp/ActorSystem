@@ -10,7 +10,7 @@ import java.util.List;
  * Dispatcher actor that splits the tasks between {@link FileSizeCounter}.
  */
 public class FileSizeCounterDispatcher extends UntypedActor {
-    private static final int WORKER_COUNT = 50;
+    private static final int WORKER_COUNT = 1;
 
     private Long sizeByte = 0L;
     private long pending = 0L;
@@ -23,8 +23,7 @@ public class FileSizeCounterDispatcher extends UntypedActor {
     public void preReceive() {
         for (int i = 0; i < WORKER_COUNT; i++) {
             workers.add(getActorContext().getEcosystem().actorOf(FileSizeCounter.class));
-            workers.add(getActorContext().getEcosystem().actorOf(FileSizeCounter.class));
-        }
+            }
     }
 
     @Override

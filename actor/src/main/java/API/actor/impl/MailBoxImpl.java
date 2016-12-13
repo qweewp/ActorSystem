@@ -1,17 +1,32 @@
 package API.actor.impl;
 
 import API.actor.abstaract.Actor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Mail box is the main class that distributes messages between the {@link Actor}.
+ * It creates or wake up receiver Actor thread.
  */
 class MailBoxImpl extends MailBox {
 
-    private Thread ownThreadForActor;
-    private ActorImpl actor;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailBox.class);
+
+    private Thread ownThread;
+    private final Lock lock;
+    private final Condition messageCondition;
+
+    MailBoxImpl() {
+        lock = new ReentrantLock(true);
+        messageCondition = lock.newCondition();
+    }
 
     private List<Object> actorMessages = new CopyOnWriteArrayList<>();
 
@@ -20,7 +35,8 @@ class MailBoxImpl extends MailBox {
         actorMessages.add(message);
     }
 
-    boolean isThereMessages() {
+    @Override
+    boolean isThereMessage() {
         return !actorMessages.isEmpty();
     }
 
@@ -30,39 +46,39 @@ class MailBoxImpl extends MailBox {
     }
 
     @Override
-    void receiveMail(ActorRefId actorRefId, Object message) {
+    void receiveMail(ActorRefId receiver, Object message) {
         addMessage(message);
-        if (ownThreadForActor != null) {
-            wakeUpThread();
+        if (ownThread == null) {
+            setOwnThread(createReceiverThread(receiver, message));
+            ownThread.start();
             return;
         }
-        ownThreadForActor = new Thread(() -> ((ActorImpl) actorRefId.getInstance()).receiveEmailFrom(actorRefId, message));
-        ownThreadForActor.start();
+        wakeUpThread();
+    }
+
+    private Thread createReceiverThread(ActorRefId receiver, Object message) {
+        Thread thread = new Thread(() -> ((ActorImpl) receiver.getInstance()).receiveEmailFrom(receiver, message));
+        thread.setUncaughtExceptionHandler(new ThreadExceptionHandler(receiver));
+        return thread;
+    }
+
+    private Thread reviveReceiverThread(ActorRefId receiver) {
+        return createReceiverThread(receiver, null);
     }
 
     /**
-     * Notifies {@link MailBoxImpl#ownThreadForActor} that MailBox has unread messages.
+     * Notifies {@link MailBoxImpl#ownThread} that MailBox has unread messages.
      */
     private void wakeUpThread() {
-        synchronized (ownThreadForActor) {
-            ownThreadForActor.notifyAll();
-        }
+        lock.lock();
+        messageCondition.signal();
+        lock.unlock();
     }
 
     @Override
-    void receiveMail(ActorRefId actorRefId, Object message, ActorRefId sender) {
-        actor.setSender(sender);
-        receiveMail(actorRefId, message);
-    }
-
-    @Override
-    Thread getOwnThread() {
-        return ownThreadForActor;
-    }
-
-    @Override
-    void setActor(ActorImpl newActor) {
-        this.actor = newActor;
+    void receiveMail(ActorRefId receiver, Object message, ActorRefId sender) {
+        ((ActorImpl) receiver.getInstance()).setSender(sender);
+        receiveMail(receiver, message);
     }
 
     @Override
@@ -72,6 +88,39 @@ class MailBoxImpl extends MailBox {
 
     @Override
     void setOwnThread(Thread thread) {
-        this.ownThreadForActor = thread;
+        this.ownThread = thread;
+    }
+
+    @Override
+    Thread getOwnThread() {
+        return ownThread;
+    }
+
+    public Lock getLock() {
+        return lock;
+    }
+
+    public Condition getMessageCondition() {
+        return messageCondition;
+    }
+
+    private class ThreadExceptionHandler implements Thread.UncaughtExceptionHandler {
+
+        private ActorRefId receiver;
+
+        ThreadExceptionHandler(ActorRefId receiver) {
+            this.receiver = receiver;
+        }
+
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            LOGGER.info("Exception: '" + e + "', in thread: " + t);
+            LOGGER.info("Actor reference id: " + receiver);
+            LOGGER.info("To see the stacktrace use DEBUG logging level");
+            Arrays.stream(t.getStackTrace()).forEach(stackTraceElement -> LOGGER.debug(stackTraceElement.toString()));
+
+            setOwnThread(reviveReceiverThread(receiver));
+            ownThread.start();
+        }
     }
 }

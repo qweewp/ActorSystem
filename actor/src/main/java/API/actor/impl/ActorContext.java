@@ -23,7 +23,6 @@ public class ActorContext {
         this.actorClassType = actorClassType;
     }
 
-
     /**
      * Shutdown this context.
      * It mean that all actor who belong to this context will invalidate.
@@ -56,7 +55,6 @@ public class ActorContext {
     public Ecosystem getEcosystem() {
         return ecosystem;
     }
-
 
     public Class getType() {
         return actorClassType;

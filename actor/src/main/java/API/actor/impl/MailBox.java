@@ -5,7 +5,7 @@ import API.actor.abstaract.Actor;
 import java.util.List;
 
 /**
- * Created by Andrey on 10.12.2016.
+ * Container for {@link Actor} messages.
  */
 abstract class MailBox {
 
@@ -14,7 +14,7 @@ abstract class MailBox {
      *
      * @return true in case if at least one message in message container
      */
-    abstract boolean isThereMessages();
+    abstract boolean isThereMessage();
 
     /**
      * Adds message to FIFO container.
@@ -26,27 +26,25 @@ abstract class MailBox {
     /**
      * Receives message.
      *
-     * @param actorRefId reference to recipient
-     * @param message    message data
+     * @param receiver reference to recipient
+     * @param message  message data
      */
-    abstract void receiveMail(ActorRefId actorRefId, Object message);
+    abstract void receiveMail(ActorRefId receiver, Object message);
 
     /**
      * Receives message with sender.
      *
-     * @param actorRefId reference to recipient
-     * @param message    message data
-     * @param sender     {@link ActorRefId} to sender
+     * @param receiver reference to recipient
+     * @param message  message data
+     * @param sender   {@link ActorRefId} to sender
      */
-    abstract void receiveMail(ActorRefId actorRefId, Object message, ActorRefId sender);
+    abstract void receiveMail(ActorRefId receiver, Object message, ActorRefId sender);
 
     abstract Object getNextMessage();
-
-    abstract Thread getOwnThread();
-
-    abstract void setActor(ActorImpl newActor);
 
     abstract List getMessages();
 
     abstract void setOwnThread(Thread thread);
+
+    abstract Thread getOwnThread();
 }

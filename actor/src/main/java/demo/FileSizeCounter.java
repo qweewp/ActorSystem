@@ -5,7 +5,8 @@ import API.actor.impl.UntypedActor;
 import java.io.File;
 
 /**
- * Created by Andrey on 10.12.2016.
+ * Actor that calculate size of all files in given directory
+ * and if given directory contains sub directory it sends it to sender.
  */
 public class FileSizeCounter extends UntypedActor {
 
