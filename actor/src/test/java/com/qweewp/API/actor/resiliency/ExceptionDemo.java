@@ -1,9 +1,9 @@
 package com.qweewp.API.actor.resiliency;
 
 import API.actor.abstaract.Actor;
-import API.actor.abstaract.IEcosystem;
-import API.actor.impl.ActorRefId;
-import API.actor.impl.Ecosystem;
+import API.actor.abstaract.ActorRefId;
+import API.actor.abstaract.Ecosystem;
+import API.actor.impl.EcosystemImpl;
 import org.junit.Test;
 
 /**
@@ -13,7 +13,7 @@ public class ExceptionDemo {
 
     @Test
     public void shouldCountReviveTheActorThread() throws InterruptedException {
-        IEcosystem ecosystem = Ecosystem.create();
+        Ecosystem ecosystem = EcosystemImpl.create();
         ActorRefId printMessageActorRefId = ecosystem.actorOf(PrintMessageActor.class);
 
         printMessageActorRefId.tell("This program written by: ");

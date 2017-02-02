@@ -1,8 +1,8 @@
 package demo;
 
-import API.actor.abstaract.IActorRefId;
-import API.actor.abstaract.IEcosystem;
-import API.actor.impl.Ecosystem;
+import API.actor.abstaract.ActorRefId;
+import API.actor.abstaract.Ecosystem;
+import API.actor.impl.EcosystemImpl;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -16,9 +16,9 @@ public class Demo {
         ResourceBundle testCase = ResourceBundle.getBundle("demo");
         String filePath = testCase.getString("demoDirectoryPath");
 
-        IEcosystem ecosystem = Ecosystem.create();
+        Ecosystem ecosystem = EcosystemImpl.create();
 
-        IActorRefId fileSizeCounterDispatcher = ecosystem.actorOf(FileSizeCounterDispatcher.class);
+        ActorRefId fileSizeCounterDispatcher = ecosystem.actorOf(FileSizeCounterDispatcher.class);
 
         fileSizeCounterDispatcher.tell(filePath);
     }

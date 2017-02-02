@@ -1,11 +1,8 @@
 package com.qweewp.API.actor.responsiveness;
 
-import API.actor.impl.UntypedActor;
+import API.actor.impl.AbstractUntypedActor;
 
-/**
- * Created by Andrey on 12.12.2016.
- */
-public class TimeDeliverChecker extends UntypedActor {
+public class TimeDeliverChecker extends AbstractUntypedActor {
 
     @Override
     public void receive(Object message) {

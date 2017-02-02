@@ -1,16 +1,15 @@
 package com.qweewp.API.actor.elasticity.worker;
 
-import API.actor.impl.UntypedActor;
+import API.actor.impl.AbstractUntypedActor;
 
 import java.io.File;
 
-public class FileSizeCounter extends UntypedActor {
+public class FileSizeCounter extends AbstractUntypedActor {
 
     private Long sizeKb = 0L;
 
     @Override
     public void receive(Object message) {
-
         if (message instanceof String) {
             String path = (String) message;
             File files = new File(path);

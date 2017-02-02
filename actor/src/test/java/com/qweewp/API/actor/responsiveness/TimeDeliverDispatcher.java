@@ -1,12 +1,9 @@
 package com.qweewp.API.actor.responsiveness;
 
-import API.actor.impl.ActorRefId;
-import API.actor.impl.UntypedActor;
+import API.actor.abstaract.ActorRefId;
+import API.actor.impl.AbstractUntypedActor;
 
-/**
- * Created by Andrey on 12.12.2016.
- */
-public class TimeDeliverDispatcher extends UntypedActor {
+public class TimeDeliverDispatcher extends AbstractUntypedActor {
 
     private Long sendTime;
 

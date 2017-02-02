@@ -1,7 +1,7 @@
 package com.qweewp.API.actor.elasticity.dispatcher;
 
-import API.actor.impl.ActorRefId;
-import API.actor.impl.UntypedActor;
+import API.actor.abstaract.ActorRefId;
+import API.actor.impl.AbstractUntypedActor;
 import com.qweewp.API.actor.elasticity.worker.FileSizeCounter;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * General class for testing.
  */
-public abstract class SeveralWorkersActor extends UntypedActor {
+public abstract class SeveralWorkersActor extends AbstractUntypedActor {
     private String dispatcherName;
     private long coutOfWorkers;
 

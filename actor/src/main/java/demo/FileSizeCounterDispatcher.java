@@ -1,7 +1,7 @@
 package demo;
 
-import API.actor.impl.ActorRefId;
-import API.actor.impl.UntypedActor;
+import API.actor.abstaract.ActorRefId;
+import API.actor.impl.AbstractUntypedActor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +9,9 @@ import java.util.List;
 /**
  * Dispatcher actor that splits the tasks between {@link FileSizeCounter}.
  */
-public class FileSizeCounterDispatcher extends UntypedActor {
-    private static final int WORKER_COUNT = 1;
+public class FileSizeCounterDispatcher extends AbstractUntypedActor {
+
+    private static final int WORKER_COUNT = 3;
 
     private Long sizeByte = 0L;
     private long pending = 0L;
@@ -23,7 +24,7 @@ public class FileSizeCounterDispatcher extends UntypedActor {
     public void preReceive() {
         for (int i = 0; i < WORKER_COUNT; i++) {
             workers.add(getActorContext().getEcosystem().actorOf(FileSizeCounter.class));
-            }
+        }
     }
 
     @Override

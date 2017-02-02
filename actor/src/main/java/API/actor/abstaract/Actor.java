@@ -1,46 +1,45 @@
 package API.actor.abstaract;
 
-import API.actor.impl.ActorContext;
-import API.actor.impl.ActorRefId;
-
 /**
  * Actor instance.
  */
 public interface Actor {
 
     /**
-     * Receives message and performs some actions with it.
-     */
-    public abstract void receive(Object message);
-
-    /**
-     * Performs some actions before receive the message.
-     */
-    public abstract void preReceive();
-
-    /**
-     * Performs some actions after receive the message.
-     */
-    public abstract void postReceive();
-
-    /**
-     * Gets {@link ActorRefId} corresponding for this Actor.
+     * Receive message and performs some actions with it.
      *
-     * @return unique reference for Actor
+     * @param message message object
+     */
+    void receive(Object message);
+
+    /**
+     * Perform some actions before receive the message.
+     */
+    void preReceive();
+
+    /**
+     * Perform some actions after receive the message.
+     */
+    void postReceive();
+
+    /**
+     * Get {@link ActorRefId} corresponding for this Actor.
+     *
+     * @return ActorRefId for sender Actor
      */
     ActorRefId getSelf();
 
     /**
-     * Gets {@link ActorRefId} corresponding for Actor which sent a message.
+     * Get {@link ActorRefId} corresponding for Actor which sent a message.
      *
-     * @return unique reference for sender Actor
+     * @return ActorRefId for sender Actor
      */
     ActorRefId getSender();
 
     /**
-     * Returns context correspinding to this Actor.
+     * Returns context corresponding to this Actor.
      *
-     * @return context
+     * @return ActorContext object
      */
     ActorContext getActorContext();
 

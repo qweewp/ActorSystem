@@ -1,12 +1,12 @@
 package com.qweewp.API.actor.resiliency;
 
-import API.actor.impl.ActorRefId;
-import API.actor.impl.UntypedActor;
+import API.actor.abstaract.ActorRefId;
+import API.actor.impl.AbstractUntypedActor;
 
 /**
  * Print message Actor.
  */
-public class PrintMessageActor extends UntypedActor {
+public class PrintMessageActor extends AbstractUntypedActor {
 
     @Override
     public void receive(Object message) {

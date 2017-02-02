@@ -1,68 +1,56 @@
 package API.actor.impl;
 
-import API.actor.abstaract.Actor;
+import API.actor.abstaract.ActorContext;
+import API.actor.abstaract.ActorRefId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Actor with untyped message handle
  */
-public abstract class UntypedActor extends ActorImpl {
+public abstract class AbstractUntypedActor extends AbstractActor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UntypedActor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractUntypedActor.class);
 
     private ActorContext actorContext;
     private MailBoxImpl mailBox;
     private ActorRefId selfRef;
     private ActorRefId sender;
 
-    public UntypedActor() {
-    }
-
     /**
-     * @see Actor#preReceive()
+     * {@inheritDoc}
      */
     @Override
     public void preReceive() {
-
     }
 
     /**
-     * @see Actor#postReceive()
+     * {@inheritDoc}
      */
     @Override
     public void postReceive() {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    void receiveEmailFrom(ActorRefId receiver, Object message) {
+    void receiveEmailFrom(ActorRefIdImpl receiver, Object message) {
         preReceive();
         try {
             while (true) {
-                while (receiver.getMailBox().isThereMessage()) {
-                    receive(receiver.getMailBox().getNextMessage());
+                Object nextMessage;
+                while ((nextMessage = receiver.getNextMessage()) != null) {
+                    receive(nextMessage);
                 }
-                waiting(1000);
+                mailBox.waiting(1000);
             }
         } catch (InterruptedException e) {
             LOGGER.debug("Interrupted while waiting: " + Thread.currentThread());
         } finally {
             postReceive();
         }
-    }
-
-    /**
-     * Drives the current thread to sleep for a certain time.
-     *
-     * @param milliseconds after this time thread wake up
-     */
-    private void waiting(long milliseconds) throws InterruptedException {
-        mailBox.getLock().lock();
-        mailBox.getMessageCondition().await(milliseconds, TimeUnit.MILLISECONDS);
-        mailBox.getLock().unlock();
     }
 
     @Override
